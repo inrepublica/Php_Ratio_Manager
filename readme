@@ -1,0 +1,57 @@
+-----------------
+Php Ratio Manager
+-----------------
+
+
+1.Licence:
+----------
+Les sources de ce logiciel sont publiées sous la License GPL v3. Merci de vous rendre: http://www.gnu.org/licenses/gpl.html pour obtenir une copie de la lisence.
+
+
+2.Prérequis:
+------------
+.PHP 5.2 ou supérieur avec l'extension CURL activé
+.Daemon CRON installé et en fonctionnement
+
+
+3.Fonctionnalités et fonctionnement:
+------------------------------------
+Ce logiciel sert a manipuler votre ratio de download/upload sur un tracker privé (Bittorrent). Une fois configuré à l'aide de la page "index.php", la page "transmission_serveur.php"
+va informer le tracker de vos statistiques de download et upload. Cela va se faire en plusieurs envois, chaque envoi générant une vitesse entre le paramètre maximum et la moitié du paramètre maximum.
+Une fois le total demandé atteint, le script ne génére plus d'envoi.
+
+
+4.Installation:
+---------------
+- Copiez l'intégralité de l'archive dans le répertoire de votre choix sur votre serveur php.
+- Ajouter une tâche CRON pour lancer automatiquement le scrpit "transmission_serveur.php" à intervalle régulière. Un délai de 30 minutes entre deux passes est un bon choix.
+	Exemple: "*/30    *       *       *       *       root    /usr/bin/php -f /volume1/web/php_ratio_manager/transmission_serveur.php"
+
+
+5.Configuration:
+----------------
+- Ajouter les torrents à utiliser dans le répertoire "php_ratio_manager/torrent/"
+- Lancer le script php "php_ratio_manager/index.php"
+Explication des options:
+	- Torrent à utiliser: Liste des torrents disponible (stocker dans le répertoire php_ratio_manager/torrent/)
+	- Client bitorrent: Sélectionner le client bitorrent à émuler
+	- Quota : Contient le total d'upload et download déjà transmis, ainsi que le total d'upload et de download à envoyer au tracker
+	- Vitesse: Vitesse maximum d'upload et de download par envoi. Les chiffres par défaut correspondent à une connexion ADSL pour une tache automatique de 30mn.
+	- Appliquer: Permet de sauvegarder la configuration. !!!! ATTENTION !!!! Lors de la sauvegarde de la configuration les quantités de download et upload transmises sont remises à zero.
+	- Paramètres par défaut: Remet la configuration initiale
+	- Log:
+		- Voir: Permet d'afficher les logs du script
+		- Supprimer: Vide le fichier log
+	- Icône: Information sur le logiciel
+
+
+6.Remerciement:
+---------------
+- Adrien Gibrat pour ca bibliothèque PHP torrent-rw: https://github.com/adriengibrat/torrent-rw
+- Pavel InFeRnODeMoN pour le logo: http://kde-look.org/usermanager/search.php?username=InFeRnODeMoN
+
+7.Changelog:
+------------
+
+v0.1:
+.Première publication du script
