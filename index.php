@@ -2,10 +2,13 @@
 /*
 Script pour modifier la configuration du logiciel
 */
+
 // Importatioon de la configuration
 $configuration_ini = parse_ini_file("configuration/configuration.ini");
 $client_ini = parse_ini_file("configuration/client.ini", true);
 $type_connection_ini = parse_ini_file("configuration/type_connection.ini", true);
+$site_torrent_ini = parse_ini_file("configuration/site_torrent.ini", true);
+
 
 // Liste les fichiers torrent présent
 function liste_torrent()
@@ -56,6 +59,22 @@ function liste_type_connection()
 		}
 	}
  }
+ 
+ // Liste les différents sites de torrent
+function liste_site_torrent()
+ {
+	global $configuration_ini;
+	global $site_torrent_ini;	
+	foreach($site_torrent_ini as $clef => $element) {
+		echo $clef;
+		if ($configuration_ini['site torrent'] == $clef) {  // Détection de la précedente configuration
+			echo "<option value=\"$clef\" selected>$clef</option>";
+		}
+		else {
+			echo "<option value=\"$clef\">$clef</option>";
+		}
+	}
+ }
 
 ?>
 <!DOCTYPE html>
@@ -80,13 +99,19 @@ function liste_type_connection()
 									<?php liste_client_torrent(); ?>
 								</select>
 						</fieldset>
+						
 						<fieldset>
-						<legend>Quota</legend>
-							<label for="taille_byte_upload">Upload :</label>
-								<?php echo round($configuration_ini['quantite transmise upload'] / 1024 / 1024); ?> sur <input type="number" name="taille_byte_upload" id="taille_byte_upload" title="Taille en Byte" size="30" maxlength="30" value="<?php echo round($configuration_ini['total de byte a uploader'] / 1024 / 1024); ?>" required/> (MByte)
-				
-							<br><label for="taille_byte_download">Download :</label>
-								<?php echo round($configuration_ini['quantite transmise download'] / 1024 / 1024); ?> sur <input type="number" name="taille_byte_download" id="taille_byte_download" title="Taille en Byte" size="30" maxlength="30" value="<?php echo round($configuration_ini['total de byte a downloader'] / 1024 / 1024); ?>" required/> (MByte)
+							<legend>Ratio</legend>
+								<label for="site_torrent" required>Site torrent à utiliser :</label>
+									<select name="site_torrent" id="site_torrent">
+										<?php liste_site_torrent(); ?>
+									</select>
+									&nbsp&nbsp Configurer mes identifiants : <input type="checkbox" name="configurer_site_torrent" value="oui">
+								<br>
+									<label for="ratio_minimum">Maintenir mon ratio à :</label>
+										<input type="number" name="ratio_minimum" id="ratio_minimum" title="Ratio minimum" size="3" maxlength="1" value="<?php echo $configuration_ini['ratio minimum']; ?>" required/> Minimum
+								<br>
+								Ratio actuel : <?php echo $configuration_ini['dernier ratio connu']; ?>		
 						</fieldset>
 
 						<fieldset>
@@ -122,7 +147,6 @@ function liste_type_connection()
 					</td>
 				</tr>
 			</table>
-			
     </body>
 
 </html>

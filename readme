@@ -10,15 +10,15 @@ Les sources de ce logiciel sont publiées sous la License GPL v3. Merci de vous r
 
 2.Prérequis:
 ------------
-.PHP 5.2 ou supérieur avec l'extension CURL activé
-.Daemon CRON installé et en fonctionnement
+- PHP 5.2 ou supérieur avec l'extension CURL activé
+- Daemon CRON installé et en fonctionnement
 
 
 3.Fonctionnalités et fonctionnement:
 ------------------------------------
-Ce logiciel sert a manipuler votre ratio de download/upload sur un tracker privé (Bittorrent). Une fois configuré à l'aide de la page "index.php", la page "transmission_serveur.php"
-va informer le tracker de vos statistiques de download et upload. Cela va se faire en plusieurs envois, chaque envoi générant une vitesse aléatoire entre le paramètre maximum et la moitié du paramètre maximum.
-Une fois le total demandé atteint, le script ne génére plus d'envoi.
+Ce logiciel sert a maintenir votre ratio de download/upload sur un tracker privé (Bittorrent). Une fois configuré à l'aide de la page "index.php", la page "transmission_serveur.php"
+va informer le tracker de vos statistiques de download et upload. Cela va se faire en plusieurs envois, chaque envoi générant une vitesse aléatoire (upload et download) entre le paramètre maximum et la moitié du paramètre maximum.
+Une le ratio minimum atteint, le script ne génére plus d'envoi.
 
 
 4.Installation:
@@ -31,13 +31,19 @@ Une fois le total demandé atteint, le script ne génére plus d'envoi.
 5.Configuration:
 ----------------
 - Ajouter les torrents à utiliser dans le répertoire "php_ratio_manager/torrent/"
-- Lancer le script php "php_ratio_manager/index.php"
+- Lancer via un navigateur (firefox par exemple) la page "php_ratio_manager/index.php"
 Explication des options:
-	- Torrent à utiliser: Liste des torrents disponible (stocker dans le répertoire php_ratio_manager/torrent/)
-	- Client bitorrent: Sélectionner le client bitorrent à émuler
-	- Quota : Contient le total d'upload et download déjà transmis, ainsi que le total d'upload et de download à envoyer au tracker
-	- Connection: Définit votre type de connection. De ce paramètre découle vos vitesses maxi et mini de download et d'upload.
-	- Appliquer: Permet de sauvegarder la configuration. !!!! ATTENTION !!!! Lors de la sauvegarde de la configuration les quantités de download et upload transmises sont remises à zero.
+	- Torrent:
+		- Torrent à utiliser: Liste des torrents disponible (stocker dans le répertoire php_ratio_manager/torrent/)
+		- Client bitorrent: Sélectionner le client bitorrent à émuler
+	- Ratio:
+		- Site torrent à utiliser: Vous permet de choisir le site de torrent privé a utiliser
+			- Cocher la case Configurer mes identifiants avant de faire appliquer, pour pouvoir modifier l'utilisateur / mot de passe du site torrent à utiliser
+		- Maintenir mon ratio à: Définit le ratio minimum à atteindre
+		- Ratio actuel: Rappel de votre taux de ratio sur le site de torrent privé sélectionné. Lors de la première utilisation cette information est vide.
+	- Connection:
+		- Type de connection: Vous permet de choisir votre type de connection (ADSL/ADSL2/Fibre optique). Ce paramètre modifie les vitesses maxi et mini pour l'upload/download.
+	- Appliquer: Permet de sauvegarder la configuration
 	- Paramètres par défaut: Remet la configuration initiale
 	- Log:
 		- Voir: Permet d'afficher les logs du script
@@ -52,8 +58,12 @@ Explication des options:
 
 7.Changelog:
 ------------
+v0.3:
+- Disparition du paramètrage manuel, ajout d'un système de gestion du ratio automatique grâce au ratio fournit par le site de torrent privé.
+- Support du site de torrent privé t411.me -> http://www.t411.me
+
 v0.2:
-.Remplacement des paramètres maxi et mini pour le download/upload par le choix d'un type de connection (ADSL/ADLS2/Fibre optique)
+- Remplacement des paramètres maxi et mini pour le download/upload par le choix d'un type de connection (ADSL/ADLS2/Fibre optique)
 
 v0.1:
-.Première publication du script
+- Première version du script

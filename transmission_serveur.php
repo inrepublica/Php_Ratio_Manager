@@ -4,14 +4,21 @@
 */
 
 // --------------------- Librairie --------------------------------
-
-// Importation de la librairie torrent.php
 include("librairies/torrent.php");
+include("librairies/ecrire_ini.php");
 
 // --------------------- Configuration ----------------------------
 
 // Importation de la configuration (stockée dans le fichier configuration.ini)
 $tableau_ini = parse_ini_file("configuration/configuration.ini");
+
+// Importation du scraper à charger
+$site_torrent_ini = parse_ini_file("configuration/site_torrent.ini", true);
+if ($tableau_ini['site torrent'] == '') {  // Si aucun site de torrent privé selectionné
+	addLog("Aucun site de torrent sélectionné, fin du script.");
+	exit;
+	}
+include($site_torrent_ini[$tableau_ini['site torrent']]['chemin scraper']);
 
 // --------------------- Fonctions --------------------------------
 
@@ -40,28 +47,30 @@ function addLog($txt) {
 	return $torrents;
  }
 
-// Fonction pour remplacer une valeur dans un ini (exemple: remplace_option_ini ("configuration/configuration.ini", "valeur mini download", "500");)
-function remplace_option_ini ($fichier_ini, $option_recherche, $valeur_insere) {
-	$fichier_parse_ini = parse_ini_file($fichier_ini);
-	
-	$fichier_parse_ini["$option_recherche"] = $valeur_insere;
-	unlink($fichier_ini);
-	
-	foreach($fichier_parse_ini as $clef => $element)
-	{
-		$ecrire = $clef.' = "'.$element.'"'."\n";
-		file_put_contents($fichier_ini, $ecrire, FILE_APPEND);
-	}
-}
-
 // --------------------- Script --------------------------------------
 
 addLog("Lancement du script"); 
 
-// Tester si le quota demandé est atteint
-if($tableau_ini['total de byte a uploader'] <= $tableau_ini['quantite transmise upload'] AND $tableau_ini['total de byte a downloader'] <= $tableau_ini['quantite transmise download']) {
-	addLog("Quota atteint, fin du script");
-	Exit;
+// Récupération du ratio
+addLog("Récupération du ratio sur ".$tableau_ini['site torrent']);
+$scrape_ratio = scrape_ratio();
+if ($scrape_ratio == FALSE) {
+	addLog("Impossible de récupérer votre ratio, fin du script.");
+	exit;
+	}
+addLog("Votre ratio: ".$scrape_ratio);
+
+// Ecriture du dernier ratio connu dans configuration.ini
+$tableau_ini['dernier ratio connu'] = $scrape_ratio;
+unlink("configuration/configuration.ini");
+$ini = new ini ('configuration/configuration.ini', 'Configuration de php ratio manager'); // Utilisation de la class php ini
+$ini->ajouter_array($tableau_ini);
+$ini->ecrire();
+
+// Tester si le ratio est inférieur au ratio minimum
+if($scrape_ratio > $tableau_ini['ratio minimum']) {
+	addLog("Votre ratio est supérieur au ratio minimum (".$tableau_ini['ratio minimum'].") , fin du script.");
+	exit;
 	}
 
 // Tester si le fichier existe et s'il est lisible
@@ -113,18 +122,8 @@ Else {
 	}
 
 // Génére une vitesse d'upload et de download entre les valeurs maxi et mini, regarde si quota dépassé pour upload ou download
-if ($tableau_ini['total de byte a uploader'] <= $tableau_ini['quantite transmise upload']) {
-	$uploaded = 0;
-	$downloaded = mt_rand($tableau_ini['valeur mini download'] / 1000, $tableau_ini['valeur maxi download'] / 1000) * 1000; // Division par 1000 puis multiplication par 1000 pour éviter le maximum de la fonction mt_rand
-	}
-else if ($tableau_ini['total de byte a downloader'] <= $tableau_ini['quantite transmise download']) {
-	$downloaded = 0;
-	$uploaded = mt_rand($tableau_ini['valeur mini upload'] / 1000, $tableau_ini['valeur maxi upload'] / 1000) * 1000;
-	}
-else {
-	$uploaded = mt_rand($tableau_ini['valeur mini upload'] / 1000, $tableau_ini['valeur maxi upload'] / 1000) * 1000;
-	$downloaded = mt_rand($tableau_ini['valeur mini download'] / 1000, $tableau_ini['valeur maxi download'] / 1000) * 1000;
-	}
+$uploaded = mt_rand($tableau_ini['valeur mini upload'] / 1000, $tableau_ini['valeur maxi upload'] / 1000) * 1000;
+$downloaded = mt_rand($tableau_ini['valeur mini download'] / 1000, $tableau_ini['valeur maxi download'] / 1000) * 1000;
 
 // Envoi de la commande Stopped
 $commande_stopped = $torrents['announce'].'?info_hash='.$torrents['hash_bin_url'].'&peer_id='.$torrents['peer_id'].'&uploaded='.$uploaded.'&downloaded='.$downloaded.'&event=stopped';
@@ -151,10 +150,6 @@ Else {
 	addLog("Réponse = ".$reponse_serveur);
 	}
 
-remplace_option_ini ("configuration/configuration.ini", "quantite transmise upload", $tableau_ini['quantite transmise upload'] + $uploaded);
-remplace_option_ini ("configuration/configuration.ini", "quantite transmise download", $tableau_ini['quantite transmise download'] + $downloaded);
 addLog("Transmission de vos stats au tracker = OK!!!");
 addLog("//----------------------------------------------------");
 ?>
-
-
