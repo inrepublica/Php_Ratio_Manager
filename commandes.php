@@ -13,20 +13,22 @@ function remise_configuration_origine() {
 
 // Fonction pour sauvegarder la configuration dans configuration.ini
 function sauvegarde_configuration_ini() {
-	$client_parse_ini = parse_ini_file("configuration/client.ini", true);
+	$client_ini = parse_ini_file("configuration/client.ini", true);
+	$type_connection_ini = parse_ini_file("configuration/type_connection.ini", true);
 	if (empty($_POST['torrent'])) $_POST['torrent'] = ""; // Vérification si pas de fichier torrent
 	$nouvelle_configuration = array (
 		'chemin du torrent' => $_POST['torrent'],
-		'user agent' => $nouveau_user_agent_prefixe = $client_parse_ini[$_POST['user_agent']]['user agent'],
-		'user agent prefixe' => $nouveau_user_agent_prefixe = $client_parse_ini[$_POST['user_agent']]['user agent prefixe'],
-		'total de byte a uploader' => $_POST['taille_byte_upload'],
-		'total de byte a downloader' => $_POST['taille_byte_download'],
+		'user agent' => $nouveau_user_agent = $client_ini[$_POST['user_agent']]['user agent'],
+		'user agent prefixe' => $nouveau_user_agent_prefixe = $client_ini[$_POST['user_agent']]['user agent prefixe'],
+		'total de byte a uploader' => $_POST['taille_byte_upload'] * 1024 * 1024,
+		'total de byte a downloader' => $_POST['taille_byte_download'] * 1024 * 1024,
 		'quantite transmise upload' => "0",
 		'quantite transmise download' => "0",
-		'valeur maxi upload' => $_POST['maxi_byte_upload'],
-		'valeur mini upload' => $_POST['maxi_byte_upload'] / 2,
-		'valeur maxi download' => $_POST['maxi_byte_download'],
-		'valeur mini download' => $_POST['maxi_byte_download'] / 2
+		'type connection' => $_POST['type_connection'],
+		'valeur maxi upload' => $nouveau_maxi_upload = $type_connection_ini[$_POST['type_connection']]['valeur maxi upload'],
+		'valeur mini upload' => $nouveau_mini_upload = $type_connection_ini[$_POST['type_connection']]['valeur mini upload'],
+		'valeur maxi download' => $nouveau_maxi_download = $type_connection_ini[$_POST['type_connection']]['valeur maxi download'],
+		'valeur mini download' => $nouveau_mini_download = $type_connection_ini[$_POST['type_connection']]['valeur mini download']
 	);
 	unlink("configuration/configuration.ini");
 	

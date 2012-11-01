@@ -115,15 +115,15 @@ Else {
 // Génére une vitesse d'upload et de download entre les valeurs maxi et mini, regarde si quota dépassé pour upload ou download
 if ($tableau_ini['total de byte a uploader'] <= $tableau_ini['quantite transmise upload']) {
 	$uploaded = 0;
-	$downloaded = mt_rand($tableau_ini['valeur mini download'], $tableau_ini['valeur maxi download']);
+	$downloaded = mt_rand($tableau_ini['valeur mini download'] / 1000, $tableau_ini['valeur maxi download'] / 1000) * 1000; // Division par 1000 puis multiplication par 1000 pour éviter le maximum de la fonction mt_rand
 	}
 else if ($tableau_ini['total de byte a downloader'] <= $tableau_ini['quantite transmise download']) {
 	$downloaded = 0;
-	$uploaded = mt_rand($tableau_ini['valeur mini upload'], $tableau_ini['valeur maxi upload']);
+	$uploaded = mt_rand($tableau_ini['valeur mini upload'] / 1000, $tableau_ini['valeur maxi upload'] / 1000) * 1000;
 	}
 else {
-	$uploaded = mt_rand($tableau_ini['valeur mini upload'], $tableau_ini['valeur maxi upload']);
-	$downloaded = mt_rand($tableau_ini['valeur mini download'], $tableau_ini['valeur maxi download']);
+	$uploaded = mt_rand($tableau_ini['valeur mini upload'] / 1000, $tableau_ini['valeur maxi upload'] / 1000) * 1000;
+	$downloaded = mt_rand($tableau_ini['valeur mini download'] / 1000, $tableau_ini['valeur maxi download'] / 1000) * 1000;
 	}
 
 // Envoi de la commande Stopped

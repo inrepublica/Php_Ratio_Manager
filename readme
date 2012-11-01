@@ -5,7 +5,7 @@ Php Ratio Manager
 
 1.Licence:
 ----------
-Les sources de ce logiciel sont publiées sous la License GPL v3. Merci de vous rendre: http://www.gnu.org/licenses/gpl.html pour obtenir une copie de la lisence.
+Les sources de ce logiciel sont publiées sous la License GPL v3. Merci de vous rendre: http://www.gnu.org/licenses/gpl.html pour obtenir une copie de la licence.
 
 
 2.Prérequis:
@@ -17,7 +17,7 @@ Les sources de ce logiciel sont publiées sous la License GPL v3. Merci de vous r
 3.Fonctionnalités et fonctionnement:
 ------------------------------------
 Ce logiciel sert a manipuler votre ratio de download/upload sur un tracker privé (Bittorrent). Une fois configuré à l'aide de la page "index.php", la page "transmission_serveur.php"
-va informer le tracker de vos statistiques de download et upload. Cela va se faire en plusieurs envois, chaque envoi générant une vitesse entre le paramètre maximum et la moitié du paramètre maximum.
+va informer le tracker de vos statistiques de download et upload. Cela va se faire en plusieurs envois, chaque envoi générant une vitesse aléatoire entre le paramètre maximum et la moitié du paramètre maximum.
 Une fois le total demandé atteint, le script ne génére plus d'envoi.
 
 
@@ -36,7 +36,7 @@ Explication des options:
 	- Torrent à utiliser: Liste des torrents disponible (stocker dans le répertoire php_ratio_manager/torrent/)
 	- Client bitorrent: Sélectionner le client bitorrent à émuler
 	- Quota : Contient le total d'upload et download déjà transmis, ainsi que le total d'upload et de download à envoyer au tracker
-	- Vitesse: Vitesse maximum d'upload et de download par envoi. Les chiffres par défaut correspondent à une connexion ADSL pour une tache automatique de 30mn.
+	- Connection: Définit votre type de connection. De ce paramètre découle vos vitesses maxi et mini de download et d'upload.
 	- Appliquer: Permet de sauvegarder la configuration. !!!! ATTENTION !!!! Lors de la sauvegarde de la configuration les quantités de download et upload transmises sont remises à zero.
 	- Paramètres par défaut: Remet la configuration initiale
 	- Log:
@@ -52,6 +52,8 @@ Explication des options:
 
 7.Changelog:
 ------------
+v0.2:
+.Remplacement des paramètres maxi et mini pour le download/upload par le choix d'un type de connection (ADSL/ADLS2/Fibre optique)
 
 v0.1:
 .Première publication du script
