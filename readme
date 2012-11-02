@@ -25,7 +25,7 @@ Une le ratio minimum atteint, le script ne génére plus d'envoi.
 ---------------
 - Copiez l'intégralité de l'archive dans le répertoire de votre choix sur votre serveur php.
 - Ajouter une tâche CRON pour lancer automatiquement le scrpit "transmission_serveur.php" à intervalle régulière. Un délai de 30 minutes entre deux passes est un bon choix.
-	Exemple: "*/30    *       *       *       *       root    /usr/bin/php -f /volume1/web/php_ratio_manager/transmission_serveur.php"
+	Exemple: "*/30    *       *       *       *       root    /usr/bin/php /volume1/web/php_ratio_manager/transmission_serveur.php"
 
 
 5.Configuration:
@@ -40,7 +40,7 @@ Explication des options:
 		- Site torrent à utiliser: Vous permet de choisir le site de torrent privé a utiliser
 			- Cocher la case Configurer mes identifiants avant de faire appliquer, pour pouvoir modifier l'utilisateur / mot de passe du site torrent à utiliser
 		- Maintenir mon ratio à: Définit le ratio minimum à atteindre
-		- Ratio actuel: Rappel de votre taux de ratio sur le site de torrent privé sélectionné. Lors de la première utilisation cette information est vide.
+		- Ratio actuel: Rappel de votre taux de ratio sur le site de torrent privé sélectionné. Lors de la première utilisation cette information est vide
 	- Connection:
 		- Type de connection: Vous permet de choisir votre type de connection (ADSL/ADSL2/Fibre optique). Ce paramètre modifie les vitesses maxi et mini pour l'upload/download.
 	- Appliquer: Permet de sauvegarder la configuration

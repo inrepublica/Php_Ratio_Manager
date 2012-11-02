@@ -4,16 +4,16 @@
 */
 
 // --------------------- Librairie --------------------------------
-include("librairies/torrent.php");
-include("librairies/ecrire_ini.php");
+include(__DIR__."/librairies/torrent.php");
+include(__DIR__."/librairies/ecrire_ini.php");
 
 // --------------------- Configuration ----------------------------
 
 // Importation de la configuration (stockée dans le fichier configuration.ini)
-$tableau_ini = parse_ini_file("configuration/configuration.ini");
+$tableau_ini = parse_ini_file(__DIR__."/configuration/configuration.ini");
 
 // Importation du scraper à charger
-$site_torrent_ini = parse_ini_file("configuration/site_torrent.ini", true);
+$site_torrent_ini = parse_ini_file(__DIR__."/configuration/site_torrent.ini", true);
 if ($tableau_ini['site torrent'] == '') {  // Si aucun site de torrent privé selectionné
 	addLog("Aucun site de torrent sélectionné, fin du script.");
 	exit;
@@ -24,8 +24,8 @@ include($site_torrent_ini[$tableau_ini['site torrent']]['chemin scraper']);
 
 // Fonction d'écriture d'un log sur l'écran et dans le fichier log.txt
 function addLog($txt) {
-	if (!file_exists("log.txt")) file_put_contents("log.txt", "");
-	file_put_contents("log.txt",date("[j/m/y H:i:s]")." - $txt \r\n".file_get_contents("log.txt"));
+	if (!file_exists(__DIR__."/log.txt")) file_put_contents(__DIR__."/log.txt", "");
+	file_put_contents(__DIR__."/log.txt",date("[j/m/y H:i:s]")." - $txt \r\n".file_get_contents(__DIR__."/log.txt"));
 	echo date("[j/m/y H:i:s]")." - $txt <br>";
  }
 
@@ -62,8 +62,8 @@ addLog("Votre ratio: ".$scrape_ratio);
 
 // Ecriture du dernier ratio connu dans configuration.ini
 $tableau_ini['dernier ratio connu'] = $scrape_ratio;
-unlink("configuration/configuration.ini");
-$ini = new ini ('configuration/configuration.ini', 'Configuration de php ratio manager'); // Utilisation de la class php ini
+unlink(__DIR__."/configuration/configuration.ini");
+$ini = new ini (__DIR__.'/configuration/configuration.ini', 'Configuration de php ratio manager'); // Utilisation de la class php ini
 $ini->ajouter_array($tableau_ini);
 $ini->ecrire();
 

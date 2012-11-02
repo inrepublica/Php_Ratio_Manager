@@ -4,24 +4,24 @@
 */
 
 // Importation des librairies
-include("librairies/ecrire_ini.php");
+include(__DIR__."/librairies/ecrire_ini.php");
 
 // Fonction pour remettre les paramètres par défaut
 function remise_configuration_origine() {
-	unlink("configuration/configuration.ini");
-	copy("configuration/configuration.ini.defaut", "configuration/configuration.ini");
+	unlink(__DIR__."/configuration/configuration.ini");
+	copy(__DIR__."/configuration/configuration.ini.defaut", __DIR__."/configuration/configuration.ini");
 	echo "Remise des paramètres par défaut";
 	echo "<br><a href='index.php'>Retour</a>";
  }
 
 // Fonction pour sauvegarder la configuration dans configuration.ini
 function sauvegarde_configuration_ini() {
-	$configuration_ini = parse_ini_file("configuration/configuration.ini");
-	$client_ini = parse_ini_file("configuration/client.ini", true);
-	$type_connection_ini = parse_ini_file("configuration/type_connection.ini", true);
-	$site_torrent_ini = parse_ini_file("configuration/site_torrent.ini", true);
+	$configuration_ini = parse_ini_file(__DIR__."/configuration/configuration.ini");
+	$client_ini = parse_ini_file(__DIR__."/configuration/client.ini", true);
+	$type_connection_ini = parse_ini_file(__DIR__."/configuration/type_connection.ini", true);
+	$site_torrent_ini = parse_ini_file(__DIR__."/configuration/site_torrent.ini", true);
 	if (empty($_POST['torrent'])) $_POST['torrent'] = ""; // Vérification si pas de fichier torrent
-	$configuration_ini['chemin du torrent'] = $_POST['torrent'];
+	$configuration_ini['chemin du torrent'] = __DIR__."/".$_POST['torrent'];
 	$configuration_ini['user agent'] = $client_ini[$_POST['user_agent']]['user agent'];
 	$configuration_ini['type connection'] = $_POST['type_connection'];
 	$configuration_ini['valeur maxi upload'] = $type_connection_ini[$_POST['type_connection']]['valeur maxi upload'];
@@ -64,12 +64,7 @@ function sauvegarde_configuration_ini() {
 
 // Fonction pour visionner le log
 function voir_log() {
-	if (!file_exists("log.txt")) {
-		echo "Fichier log vide";
-		echo "<br><a href='index.php'>Retour</a>";
-		Exit; 
-	}
-	$contenu_log = file_get_contents('log.txt');
+	$contenu_log = file_get_contents(__DIR__.'/log.txt');
 	echo '<textarea rows="20" cols="100">' . $contenu_log . '</textarea>';
 	echo "<br><a href='index.php'>Retour</a>";
  }
@@ -77,11 +72,7 @@ function voir_log() {
 // Fonction d'éffacement du log
 function efface_log()
  {
-	if (!file_exists("log.txt")) {
-		echo "Fichier log déjà vide";
-		echo "<br><a href='index.php'>Retour</a>";
-		Exit; }
-	unlink("log.txt");
+	file_put_contents(__DIR__.'/log.txt', '');
 	echo "Fichier log éffacé";
 	echo "<br><a href='index.php'>Retour</a>";
  }

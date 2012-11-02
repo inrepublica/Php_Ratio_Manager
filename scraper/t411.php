@@ -4,13 +4,13 @@ function scrape_ratio()
 {
 
 // Récupération du username et password
-$site_torrent_ini = parse_ini_file("configuration/site_torrent.ini", true);
+$site_torrent_ini = parse_ini_file(__DIR__."/../configuration/site_torrent.ini", true);
 $alsa_username = $site_torrent_ini['t411.me']['utilisateur']; 
 $alsa_password = $site_torrent_ini['t411.me']['mot de passe']; 
 
 $timeout = 10; 
 
-$cookies_file = "cookies.txt"; 
+$cookies_file = __DIR__."/cookies.txt"; 
 
 /************************************************** 
 Première requête : Connexion 
