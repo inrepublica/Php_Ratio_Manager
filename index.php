@@ -93,7 +93,9 @@ function liste_site_torrent()
 							<label for="torrent" required>Torrent à utiliser :</label>
 								<select name="torrent" id="torrent">
 									<?php liste_torrent(); ?>
-								</select>				
+								</select>
+								&nbsp&nbsp<a href="gestion_fichiers_torrent.php?action=ajouter_fichier_torrent"><img src="images/upload.png" alt="Ajouter un torrent" width="20" height="20" title="Ajouter un torrent"></a>
+								&nbsp&nbsp<a href="gestion_fichiers_torrent.php?action=suprimer_fichier_torrent"><img src="images/suprimer.jpg" alt="Suprimer un torrent" width="20" height="20" title="Suprimer un torrent"></a>
 							<br><label for="user_agent" required>Client bitorrent :</label>
 								<select name="user_agent" id="user_agent">
 									<?php liste_client_torrent(); ?>
