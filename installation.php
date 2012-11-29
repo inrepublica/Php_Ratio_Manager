@@ -14,7 +14,7 @@ function installation() {
 		$contenu_htaccess = "AuthName \"PHP Ratio Manager\"\nAuthType Basic\nAuthUserFile \"$chemin_htpasswd\"\nRequire valid-user";
 		file_put_contents($chemin_htaccess, $contenu_htaccess);
 		$contenu_htpasswd = $_POST['identifiant'].":".$_POST['mot_de_passe'];
-		file_put_contents(__DIR__.'/.htpasswd', $contenu_htpasswd);
+		file_put_contents($chemin_htpasswd, $contenu_htpasswd);
 	}
 	else { // Installation sur un autre système (mot de passe chiffré)
 		$chemin_htaccess = __DIR__."/.htaccess";
