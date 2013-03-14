@@ -1,0 +1,24 @@
+body {
+	padding-top: 10px;
+	background-color: #c3e4b9;
+}
+.page {
+	background-color: #f2f2f2;
+	margin-bottom: 10px;
+	border-radius: 5px 5px 5px 5px;
+	text-align: left;
+}
+.statut_membre {
+	height: 40px;
+	line-height: 40px;
+	color: blue;
+}
+.contenu_page {
+	padding: 40px;
+}
+.pied_page {
+	background-color: #f2f2f2;
+	margin-bottom: 10px;
+	border-radius: 5px 5px 5px 5px;
+	text-align: center;
+}

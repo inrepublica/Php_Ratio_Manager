@@ -1,0 +1,44 @@
+-----------------
+Php Ratio Manager
+-----------------
+
+
+1.Licence:
+----------
+Les sources de ce logiciel sont publiées sous la License GPL v3. Merci de vous rendre: http://www.gnu.org/licenses/gpl.html pour obtenir 
+une copie de la licence.
+
+
+2.Prérequis:
+------------
+- PHP 5.2 ou supérieur avec l'extension CURL activé
+- Avoir accès au Daemon CRON ou utiliser un service de CRON par internet (ex: http://www.cronjobonline.com/ )
+
+
+3.Fonctionnalités et fonctionnement:
+------------------------------------
+Ce logiciel sert a maintenir votre ratio de download/upload sur un tracker privé (Bittorrent). Une fois configuré, la page "recuperation_ratio.php"
+va récupérer vos statistiques de download et upload. Ensuite la page "generer_ratio.php" va envoyer des statistiques favorable à l'augmentation de votre ratio. 
+Cela va se faire en plusieurs envois, chaque envoi générant une vitesse aléatoire (upload et download) basé sur votre type de connection. Une le ratio minimum atteint, le script ne génére plus d'envoi.
+
+
+4.Installation:
+---------------
+- Copiez l'intégralité de l'archive dans le répertoire de votre choix sur votre serveur.
+- Lancer via un navigateur (firefox par exemple) la page "/php_ratio_manager/installation.php"
+- !!!ATTENTION!!! -> Une fois l'installation terminée, n'oubliez pas de supprimer le fichier installation.php
+- Ajouter une tâche CRON pour lancer automatiquement le script "recuperation_ratio" à intervalle régulière. Un délai de 10 minutes entre deux passes est un bon choix.
+	Exemple: "*/10    *       *       *       *       root    /usr/bin/php /web/php_ratio_manager/daemon/recuperation_ratio.php"
+- Ajouter une deuxième tâche CRON pour lancer automatiquement le script "generer_ratio.php" à intervalle régulière. Un délai de 10 minutes entre deux passes est un bon choix.
+	Exemple: "*/10    *       *       *       *       root    /usr/bin/php /web/php_ratio_manager/daemon/generer_ratio.php.php"
+- Si vous n'avez pas accès au daemon cron, vous pouvez un service de cron à distance (ex: http://www.cronjobonline.com/ )
+- PHP ratio manager est maintenant installé, rendez-vous à l'aide d'un navigateur dans /php_ratio_manager/ pour la configuration
+
+5.Remerciement:
+---------------
+- Adrien Gibrat pour ca bibliothèque PHP torrent-rw: https://github.com/adriengibrat/torrent-rw
+- Pavel InFeRnODeMoN pour le logo: http://kde-look.org/usermanager/search.php?username=InFeRnODeMoN
+
+6.Changelog:
+------------
+v0.1 Beta : Complète réécriture du logiciel pour un mode multi-utilisateurs, utilisation du bootstrap de twitter

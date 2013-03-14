@@ -1,0 +1,35 @@
+<form action="index.php" method="post">
+	<fieldset>
+	<legend>Paramètres</legend>
+		<label for="user_agent" required>Client bitorrent :</label>
+			<select name="user_agent" id="user_agent">
+				<?php liste_client_torrent(); ?>
+			</select>
+			
+		<label for="type_connection" required>Type de connection :</label>
+			<select name="type_connection" id="type_connection">
+				<?php liste_type_connection(); ?>
+			</select>
+			
+		<label for="ratio_minimum">Maintenir mon ratio à :</label>
+			<input type="number" name="ratio_minimum" id="ratio_minimum" title="Ratio minimum" size="3" maxlength="1" value ="2" required/> Minimum
+	</fieldset>
+	
+	<fieldset>
+	<legend>Site de torrent</legend>
+		<label for="site_torrent" required>Site torrent à utiliser :</label>
+			<select name="site_torrent" id="site_torrent">
+				<?php liste_site_torrent(); ?>
+			</select>
+			
+		<label for="utilisateur">Utilisateur :</label>
+			<input type="text" name="utilisateur" id="utilisateur" title="nom d'utilisateur" size="15" maxlength="50" required/>
+			
+		<label for="mot_de_passe">Mot de passe :</label>
+			<input type="password" name="mot de passe" id="mot_de_passe" title="Mot de passe" size="15" maxlength="50" required/>			
+	</fieldset>
+	
+	<input type="hidden" name="page" value="taches" />
+	<input type="hidden" name="action" value="tache_ajoutee" />
+	<input type="submit" value="Valider" />
+</form>

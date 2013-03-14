@@ -1,155 +1,160 @@
 <?php
-/*
-Script pour modifier la configuration du logiciel
-*/
+// Importation des librairies nécessaires
+include ("librairies/gravatar.php");
 
-// Importatioon de la configuration
-$configuration_ini = parse_ini_file("configuration/configuration.ini");
-$client_ini = parse_ini_file("configuration/client.ini", true);
-$type_connection_ini = parse_ini_file("configuration/type_connection.ini", true);
-$site_torrent_ini = parse_ini_file("configuration/site_torrent.ini", true);
-
-
-// Liste les fichiers torrent présent
-function liste_torrent()
- {
-	$repertoire = glob("torrent/*.torrent");
-	global $configuration_ini;
-	// if (!empty($repertoire)) {
-		foreach ($repertoire as $repertoire) {
-			$fichier = substr($repertoire, 8);
-			if ($configuration_ini['chemin du torrent'] == $repertoire) {
-				echo "<option value=\"$repertoire\" selected>$fichier</option>";
-			}
-			else {
-				echo "<option value=\"$repertoire\">$fichier</option>";
-			}
-		}
-	// }
- }
- 
-// Liste les client torrent possible
-function liste_client_torrent()
- {
-	global $configuration_ini;
-	global $client_ini;	
-	foreach($client_ini as $clef => $element) {
-		echo $clef;
-		if ($configuration_ini['user agent'] == $element['user agent']) {  // Détection de la précedente configuration
-			echo "<option value=\"$clef\" selected>$clef</option>";
-		}
-		else {
-			echo "<option value=\"$clef\">$clef</option>";
-		}
+// Fonction affichage statut membre
+function affichage_statut_membre () {
+	if (!empty($_SESSION['utilisateur'])) {
+		echo '<img src="'.$_SESSION['url_image_gravatar'].'" alt="Votre Gravatar" />';
+		echo $_SESSION['utilisateur'];
 	}
- }
- 
- // Liste les type de connection
-function liste_type_connection()
- {
-	global $configuration_ini;
-	global $type_connection_ini;	
-	foreach($type_connection_ini as $clef => $element) {
-		echo $clef;
-		if ($configuration_ini['type connection'] == $clef) {  // Détection de la précedente configuration
-			echo "<option value=\"$clef\" selected>$clef</option>";
-		}
-		else {
-			echo "<option value=\"$clef\">$clef</option>";
-		}
-	}
- }
- 
- // Liste les différents sites de torrent
-function liste_site_torrent()
- {
-	global $configuration_ini;
-	global $site_torrent_ini;	
-	foreach($site_torrent_ini as $clef => $element) {
-		echo $clef;
-		if ($configuration_ini['site torrent'] == $clef) {  // Détection de la précedente configuration
-			echo "<option value=\"$clef\" selected>$clef</option>";
-		}
-		else {
-			echo "<option value=\"$clef\">$clef</option>";
-		}
-	}
- }
+}
+// Initialise une session
+session_start();
 
+// Si session utilisateur est vide et cookies présent
+if (empty($_SESSION['utilisateur']) AND !empty($_COOKIE['utilisateur']) AND !empty($_COOKIE['mot_de_passe'])) {
+	// Recherche de l'utilisateur
+	try {
+		// Nouvel objet de base SQLite
+		$bdd_handle = new PDO('sqlite:bdd/db.sqlite');
+		// Quelques options
+		$bdd_handle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		// Recherche utilisateur mot de passe
+		$query = "SELECT * FROM membres WHERE utilisateur=:utilisateur AND mot_de_passe=:mot_de_passe";
+		$requete = $bdd_handle->prepare($query);
+		$requete->execute(array('utilisateur' => $_COOKIE['utilisateur'], 'mot_de_passe' => $_COOKIE['mot_de_passe']));
+		// On change la réponse SQL en réponse PHP.
+		$resultat = $requete->fetchAll(PDO::FETCH_ASSOC);
+		// Si résultat positif on importe l'adresse mail et l'id du membre 
+		if (!empty($resultat)) {
+			$_SESSION['email'] = $resultat[0]['email'];
+			$_SESSION['id'] = $resultat[0]['id'];
+		}
+		// On ferme la bdd
+		$bdd_handle = NULL;
+	
+	} catch (Exception $e) {
+		die('Erreur : '.$e->getMessage());
+	}	
+	
+	// Si utlisateur est membre génére la session
+	if (!empty($resultat)) {
+		$_SESSION['utilisateur'] = $_COOKIE['utilisateur'];
+		get_gravatar($_SESSION['email']);
+	}
+	// Si utilisateur non membre alors destruction des cookies
+	else {
+		setcookie('utilisateur', '', time() - 3600);
+		setcookie('mot_de_passe', '', time() - 3600);
+	}
+}
+
+// Créer les cookies et les paramètres de la session avec les paramètres $_POST de connexion.php si l'utilisateur est présent dans la base des membres
+if (!empty($_POST['utilisateur']) AND !empty($_POST['mot_de_passe'])) {
+	// Recherche de l'utilisateur
+	try {
+		// Nouvel objet de base SQLite
+		$bdd_handle = new PDO('sqlite:bdd/db.sqlite');
+		// Quelques options
+		$bdd_handle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		// Recherche utilisateur mot de passe
+		$query = "SELECT * FROM membres WHERE utilisateur=:utilisateur AND mot_de_passe=:mot_de_passe";
+		$requete = $bdd_handle->prepare($query);
+		$requete->execute(array('utilisateur' => $_POST['utilisateur'], 'mot_de_passe' => $_POST['mot_de_passe']));
+		// On change la réponse SQL en réponse PHP.
+		$resultat = $requete->fetchAll(PDO::FETCH_ASSOC);
+		// Si résultat positif on importe l'adresse mail et l'id du membre
+		if (!empty($resultat)) {
+			$_SESSION['email'] = $resultat[0]['email'];
+			$_SESSION['id'] = $resultat[0]['id'];
+		}	
+		// On ferme la bdd
+		$bdd_handle = NULL;
+	
+	} catch (Exception $e) {
+		die('Erreur : '.$e->getMessage());
+	}
+	// Si utlisateur est membre génére la session et les cookies
+	if (!empty($resultat)) {
+		setcookie('utilisateur', $_POST['utilisateur'], time() + 365*24*3600, null, null, false, true);
+		setcookie('mot_de_passe', $_POST['mot_de_passe'], time() + 365*24*3600, null, null, false, true);
+		$_SESSION['utilisateur'] = $_POST['utilisateur'];
+		get_gravatar($_SESSION['email']);
+		header('Location: index.php');
+	}
+	// Mauvais utilisateur
+	else {
+		$utilisateur_faux = TRUE;
+	}
+}
+
+// Suppression des cookies et de la session si demande de deconnexion
+if (!empty($_GET['page']) AND $_GET['page'] == 'deconnexion') {
+	setcookie('utilisateur', '', time() - 3600);
+	setcookie('mot_de_passe', '', time() - 3600);
+	session_destroy();
+}
+
+// Entête de page
+include ('themes/entete.html');
+
+
+var_dump($_GET);
+var_dump($_POST);
+
+
+// Détection de la présence d'une session valide
+if (empty($_SESSION['utilisateur'])) {
+	// Si l'utilisateur est un faux
+	if (!empty($utilisateur_faux)) echo "Nom d'utilisateur ou mot de passe incorrect.";
+	else include('contenu/connexion.php');
+}
+else {
+	// Récupération de la variable $page GET ou POST
+	if (!empty($_GET['page'])) $page = $_GET['page'];
+	if (!empty($_POST['page'])) $page = $_POST['page'];
+	// choix des pages
+	if (!empty($page)) {
+		switch ($page)
+	 	{
+	 		case "acceuil";
+	 		include ('contenu/acceuil.php');
+	 		break;
+	 		
+	 		case "configuration";
+	 		include('contenu/configuration.php');
+	 		break;
+	 		
+	 		case "taches";
+	 		include ('contenu/taches.php');
+	 		break;
+	 		
+	 		case "log";
+	 		include('contenu/log.php');
+	 		break;
+	 		
+	 		case "aide";
+	 		include('contenu/aide.php');
+	 		break;
+	 			
+	 		case "a_propos";
+	 		include('contenu/a_propos.php');
+	 		break;
+	 		
+	 		case "deconnexion";
+	 		echo "Vous êtes maintenant déconnecté du site.";
+	 		break;
+	 		
+	 		default:
+	 		echo "La page demandé est inconnue.";
+	 	}
+	}
+	else {
+		include('contenu/acceuil.php');
+	}
+}
+
+// Pied de page
+include ('themes/piedpage.html');
 ?>
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Configuration de PHP Ratio Manager</title>
-    </head>
-
-    <body>
-		<form method="post" action="commandes.php">
-			<table border="0">
-				<tr>
-					<td>
-						<fieldset>
-						<legend>Torrent</legend>
-							<label for="torrent" required>Torrent à utiliser :</label>
-								<select name="torrent" id="torrent">
-									<?php liste_torrent(); ?>
-								</select>
-								&nbsp&nbsp<a href="gestion_fichiers_torrent.php?action=ajouter_fichier_torrent"><img src="images/upload.png" alt="Ajouter un torrent" width="20" height="20" title="Ajouter un torrent"></a>
-								&nbsp&nbsp<a href="gestion_fichiers_torrent.php?action=suprimer_fichier_torrent"><img src="images/suprimer.jpg" alt="Suprimer un torrent" width="20" height="20" title="Suprimer un torrent"></a>
-							<br><label for="user_agent" required>Client bitorrent :</label>
-								<select name="user_agent" id="user_agent">
-									<?php liste_client_torrent(); ?>
-								</select>
-						</fieldset>
-						
-						<fieldset>
-							<legend>Ratio</legend>
-								<label for="site_torrent" required>Site torrent à utiliser :</label>
-									<select name="site_torrent" id="site_torrent">
-										<?php liste_site_torrent(); ?>
-									</select>
-									&nbsp&nbsp Configurer mes identifiants : <input type="checkbox" name="configurer_site_torrent" value="oui">
-								<br>
-									<label for="ratio_minimum">Maintenir mon ratio à :</label>
-										<input type="number" name="ratio_minimum" id="ratio_minimum" title="Ratio minimum" size="3" maxlength="1" value="<?php echo $configuration_ini['ratio minimum']; ?>" required/> Minimum
-								<br>
-								Ratio actuel : <?php echo $configuration_ini['dernier ratio connu']; ?>		
-						</fieldset>
-
-						<fieldset>
-						<legend>Connection</legend>
-							<label for="type_connection" required>Type de connection :</label>
-								<select name="type_connection" id="type_connection">
-									<?php liste_type_connection(); ?>
-								</select>
-						</fieldset>
-			
-			<input type="hidden" name="action" value="sauvegarde_configuration_ini">
-			<input type="submit" value="Appliquer" />
-		</form>
-		<form method="post" action="commandes.php">
-			<input type="hidden" name="action" value="remise_configuration_origine">
-			<input type="submit" value="Paramètres par défaut" />
-		</form>
-					</td>
-					<td>
-						<fieldset>
-							<legend>Fichier Log</legend>
-								<form method="post" action="commandes.php">
-									<input type="hidden" name="action" value="efface_log">
-									<input type="submit" value="Supprimer" />
-					
-								</form>
-								<form method="post" action="commandes.php">
-									<input type="hidden" name="action" value="voir_log">
-									<input type="submit" value="Voir" />
-								</form>	
-						</fieldset>
-						<a href="credit.html" title="A propos" target="_blank"><img border="0" src="images/logo.png" alt="Php Ratio Manager"></a>
-					</td>
-				</tr>
-			</table>
-    </body>
-
-</html>
-

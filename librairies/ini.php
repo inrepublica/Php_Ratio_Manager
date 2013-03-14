@@ -47,7 +47,7 @@ class ini
 		return true;
 	}
  
-	public function ecrire ($rewrite = false) {
+	public function ecrire ($rewrite = true) {
 		$c = true;
 		if (file_exists($this->filename)) {
 			if ($rewrite) {
