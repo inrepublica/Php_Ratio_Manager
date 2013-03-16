@@ -3,9 +3,12 @@
 
 // Fonction d'écriture d'un log sur l'écran et dans le fichier log.txt
 function addLog($utilisateur, $txt, $erreur) {
-	if (file_get_contents(dirname(__FILE__)."/../utilisateurs/".$utilisateur."/log.txt") == "") { $contenu_log = date("j/m/y H:i:s")."#".$txt."#".$erreur; } // Si fichier vide pas de \n
+	
+	if (is_readable(dirname(__FILE__)."/../utilisateurs/".$utilisateur."/log.txt")) { // Test si le fichier existe
+		if (file_get_contents(dirname(__FILE__)."/../utilisateurs/".$utilisateur."/log.txt") == "") { $contenu_log = date("j/m/y H:i:s")."#".$txt."#".$erreur; } // Si fichier vide pas de \n
+		else { $contenu_log = "\n".date("j/m/y H:i:s")."#".$txt."#".$erreur; }
+	}
 	else { $contenu_log = "\n".date("j/m/y H:i:s")."#".$txt."#".$erreur; }
-
 	
 	// Limite de taille pour le fichier log
 	$limite = 100000;
@@ -31,7 +34,9 @@ function addLog($utilisateur, $txt, $erreur) {
  
  // Fonction pour visionner le log
 function voir_log($utilisateur) {
-	if (($handle = fopen(dirname(__FILE__)."/../utilisateurs/".$utilisateur."/log.txt", "r")) !== FALSE) {
+	if (is_readable(dirname(__FILE__)."/../utilisateurs/".$utilisateur."/log.txt") !== FALSE)
+	{
+		$handle = fopen(dirname(__FILE__)."/../utilisateurs/".$utilisateur."/log.txt", "r");
 		if (file_get_contents(dirname(__FILE__)."/../utilisateurs/".$utilisateur."/log.txt") == "") { echo "Fichier log vide."; }
 		else {
 		

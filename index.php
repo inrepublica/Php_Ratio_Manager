@@ -5,10 +5,11 @@ include ("librairies/gravatar.php");
 // Fonction affichage statut membre
 function affichage_statut_membre () {
 	if (!empty($_SESSION['utilisateur'])) {
-		echo '<img src="'.$_SESSION['url_image_gravatar'].'" alt="Votre Gravatar" />';
+		echo '<a href="http://www.gravatar.com" target="_blank"><img src="'.$_SESSION['url_image_gravatar'].'" alt="Votre Gravatar" /></a>';
 		echo $_SESSION['utilisateur'];
 	}
 }
+
 // Initialise une session
 session_start();
 
@@ -51,7 +52,7 @@ if (empty($_SESSION['utilisateur']) AND !empty($_COOKIE['utilisateur']) AND !emp
 }
 
 // Créer les cookies et les paramètres de la session avec les paramètres $_POST de connexion.php si l'utilisateur est présent dans la base des membres
-if (!empty($_POST['utilisateur']) AND !empty($_POST['mot_de_passe'])) {
+if (!empty($_POST['utilisateur']) AND !empty($_POST['mot_de_passe']) AND !empty($_POST['connexion'])) {
 	// Recherche de l'utilisateur
 	try {
 		// Nouvel objet de base SQLite
@@ -98,11 +99,6 @@ if (!empty($_GET['page']) AND $_GET['page'] == 'deconnexion') {
 
 // Entête de page
 include ('themes/entete.html');
-
-
-var_dump($_GET);
-var_dump($_POST);
-
 
 // Détection de la présence d'une session valide
 if (empty($_SESSION['utilisateur'])) {

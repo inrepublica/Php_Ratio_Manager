@@ -10,6 +10,9 @@ include("../librairies/log.php");
 // Importation des Configuration
 $site_torrent_ini = parse_ini_file("../configuration/site_torrent.ini", true);
 
+// Délai minimum entre deux mise à jour
+$delai = time() - (1 * 60);
+
 // Importation de la BDD
 try {
 	// Nouvel objet de base SQLite
@@ -17,10 +20,18 @@ try {
 	// Quelques options
 	$bdd_handle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	// Recherche utilisateur mot de passe
-	$query = "SELECT * FROM taches ORDER BY timestamp_dernier_ratio";
+	$query = "SELECT * FROM taches WHERE timestamp_dernier_ratio < ? ORDER BY timestamp_dernier_ratio";
 	$requete = $bdd_handle->prepare($query);
-	$requete->execute();
+	$requete->execute(array($delai));
 	$resultat = $requete->fetchAll(PDO::FETCH_ASSOC);
+	
+	//Vérification du délai minimum
+	if (empty($resultat))
+	{
+		echo "Le délai de 30 minutes avec la dernière passe n'est pas écoulé.";
+		Exit;
+	}
+	
 	// On charge le nom d'utilisateur avec le id_membre
 	$query = "SELECT utilisateur FROM membres WHERE id = ?";
 	$requete = $bdd_handle->prepare($query);

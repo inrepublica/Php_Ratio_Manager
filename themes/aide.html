@@ -1,1 +1,27 @@
-A faire.
+Ce logiciel sert a maintenir votre ratio de download/upload sur un tracker privé (Bittorrent). Une fois configuré, la page "recuperation_ratio.php"
+va récupérer vos statistiques de download et upload. Ensuite la page "generer_ratio.php" va envoyer des statistiques favorable à l'augmentation de votre ratio. 
+Cela va se faire en plusieurs envois, chaque envoi générant une vitesse aléatoire (upload et download) basé sur votre type de connection. Une le ratio minimum atteint, le script ne génére plus d'envoi.
+<br><br>
+1. Acceuil<br>
+- La page d'acceuil de Php Ratio Manager<br><br>
+2. Tâches<br>
+2.1 Liste<br>
+- Affiche la liste des tâches à éffectuer que vous avez configuré. La dernière colonne du tableau vous permet de supprimer une tâche. A noter
+que vous ne disposez que d'une tâche pour chaque site de torrent (Exemple: 1 seul tâche pour le site t411.me).<br>
+2.2 Ajouter<br>
+- C'est ici que vous ajoutez une tâche à éffectuer. Remplissez simplement le formulaire avec les informations correspondantes.
+<br>Client bitorrent: il s'agit du type de client à émuler (le logiciel de bitorrent que vous utilisez d'habitude). Par défaut le choix est Transmission.
+<br>Type de connection: il s'agit du type de connection à émuler. Attention car certains sites de torrent n'acceptent pas des débits trop élevés. Par exemple t411.me considère une connection fibre comme de la triche. Par défaut connection ADSL.
+<br>Maintenir mon ratio à: il s'agit ici de déterminer votre ratio minimum. Php Ratio Manager fera remonter doucement votre ratio jusqu'a cette valeur.
+<br>Site torrent à utiliser: il s'agit ici du site torrent qui va etre utiliser par la tâche (Exemple t411.me)
+<br>Utilisateur: Votre nom d'utilisateur utilisé par vous connecter sur le site de torrent (Exempe: toto pour t411.me)
+<br>Mot de passe: Votre mot de passse utilisé par vous connecter sur le site de torrent (Exempe: motdepassetot pour t411.me)
+<br><br>3.Log<br>
+3.1 Voir<br>
+Affiche le log(journal d'erreurs) pour votre compte. Utile en cas de disfonctionnement.
+3.2 Supprimer<br>
+Supprimer le log(journal d'erreurs).
+<br><br>4.Aide
+<br>La page d'aide
+<br><br>5.A propos
+<br>Les informations utiles pour Php Ratio Manager

@@ -59,10 +59,10 @@ function liste_taches() {
 				$ratio_minimum = $element['ratio_minimum'];
 				$user_agent = $element['user_agent'];
 				$type_connection = $element['type_connection'];
-				$timestamp_dernier_upload = $element['timestamp_dernier_upload'];
+				$timestamp_dernier_upload = date('d/m/Y H:i:s', $element['timestamp_dernier_upload']);
 				echo "<tr>";
 				echo '<td><img src="scraper/'.$logo_site_torrent.'" alt="Php Ratio Manager"></td>'."<td>$site_torrent</td><td>$identifiant</td><td>$mot_de_passe</td><td>$dernier_ratio</td>";
-				echo "<td>$ratio_minimum</td><td>$user_agent</td><td>$type_connection</td><td>$timestamp_dernier_upload</td><td><a href='index.php?page=taches&action=supprimer_tache&id_tache=$id_tache'>X</a></td>";
+				echo "<td>$ratio_minimum</td><td>$user_agent</td><td>$type_connection</td><td>$timestamp_dernier_upload</td><td><a href='index.php?page=taches&action=supprimer_tache&id_tache=$id_tache&site_torrent=$site_torrent'>X</a></td>";
 				echo "</tr>";
 			}
 			echo "</table>";
@@ -92,40 +92,48 @@ function tache_ajoutee() {
 	// Importation des Configuration
 	$site_torrent_ini = parse_ini_file("configuration/site_torrent.ini", true);
 	
-	// Test de récupération du ratio
-	include('scraper/'.$site_torrent_ini[$_POST['site_torrent']]['chemin scraper']);
-	$scrape_ratio = scrape_ratio($_POST['utilisateur'], $_POST['mot_de_passe']);
-	if ($scrape_ratio == FALSE) {
-		echo 'Impossible de communiquer avec ';
-		echo $_POST['site_torrent'];
+	// Test pour vérifier si une tache pour le site de torrent est déjà présente
+	echo 'utilisateurs/'.$_SESSION['utilisateur'].'/'.$_POST['site_torrent'].'.ini';
+	if (is_readable('utilisateurs/'.$_SESSION['utilisateur'].'/'.$_POST['site_torrent'].'.ini')) {
+		echo "<br>Impossible d'ajouter une tache pour ".$_POST['site_torrent']." Une seul tâche par site de torrent autorisée, supprimé d'abord l'ancienne.";
 	}
 	else {
-		echo "Communication avec ".$_POST['site_torrent']." -> OK";
-		// Téléchargement d'un torrent
-		$telechargement_torrent = telechargement_torrent($_SESSION['utilisateur'],$_POST['utilisateur'], $_POST['mot_de_passe']);
-		if ($telechargement_torrent == FALSE) {
-			echo '<br>Impossible de télécharger un torrent avec ';
+		// Test de récupération du ratio
+		include('scraper/'.$site_torrent_ini[$_POST['site_torrent']]['chemin scraper']);
+		$scrape_ratio = scrape_ratio($_POST['utilisateur'], $_POST['mot_de_passe']);
+		if ($scrape_ratio == FALSE) {
+			echo 'Impossible de communiquer avec ';
 			echo $_POST['site_torrent'];
 		}
 		else {
-			echo "<br>Téléchargement d'un torrent sur ".$_POST['site_torrent']." -> OK";
-			// Insertion dans la bdd de la tâche
-			try {
-				// Nouvel objet de base SQLite
-				$bdd_handle = new PDO('sqlite:bdd/db.sqlite');
-				$bdd_handle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$query = "INSERT INTO taches(timestamp_dernier_ratio, timestamp_dernier_upload, id_membre, site, utilisateur, mot_de_passe, dernier_ratio, ratio_minimum, user_agent, type_connection) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-				$requete = $bdd_handle->prepare($query);
-				$requete->execute(array(time(), time(), $_SESSION['id'], $_POST['site_torrent'], $_POST['utilisateur'], $_POST['mot_de_passe'], $scrape_ratio, $_POST['ratio_minimum'], $_POST['user_agent'], $_POST['type_connection']));
-				echo "<br>Enregistrement de votre tâche -> OK";
-				// On ferme la bdd
-				$bdd_handle = NULL;
-			
-			} catch (Exception $e) {
-				die('<br>Enregistrement de votre tâche -> Erreur: '.$e->getMessage());
+			echo "Communication avec ".$_POST['site_torrent']." -> OK";
+			// Téléchargement d'un torrent
+			$telechargement_torrent = telechargement_torrent($_SESSION['utilisateur'],$_POST['utilisateur'], $_POST['mot_de_passe']);
+			if ($telechargement_torrent == FALSE) {
+				echo '<br>Impossible de télécharger un torrent avec ';
+				echo $_POST['site_torrent'];
+			}
+			else {
+				echo "<br>Téléchargement d'un torrent sur ".$_POST['site_torrent']." -> OK";
+				// Insertion dans la bdd de la tâche
+				try {
+					// Nouvel objet de base SQLite
+					$bdd_handle = new PDO('sqlite:bdd/db.sqlite');
+					$bdd_handle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+					$query = "INSERT INTO taches(timestamp_dernier_ratio, timestamp_dernier_upload, id_membre, site, utilisateur, mot_de_passe, dernier_ratio, ratio_minimum, user_agent, type_connection) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+					$requete = $bdd_handle->prepare($query);
+					$requete->execute(array(time(), time(), $_SESSION['id'], $_POST['site_torrent'], $_POST['utilisateur'], $_POST['mot_de_passe'], $scrape_ratio, $_POST['ratio_minimum'], $_POST['user_agent'], $_POST['type_connection']));
+					echo "<br>Enregistrement de votre tâche -> OK";
+					// On ferme la bdd
+					$bdd_handle = NULL;
+						
+				} catch (Exception $e) {
+					die('<br>Enregistrement de votre tâche -> Erreur: '.$e->getMessage());
+				}
 			}
 		}
 	}
+
 }
 
 // Suppression d'une tache
@@ -140,9 +148,11 @@ function suppression_tache () {
 		$query = "DELETE FROM taches WHERE id=?";
 		$requete = $bdd_handle->prepare($query);
 		$requete->execute(array($_GET['id_tache']));
-		echo "Tâche supprimée avec succès.";
 		// On ferme la bdd
 		$bdd_handle = NULL;
+		// Suppression du fichier "site_torrent".ini correspondant
+		unlink('utilisateurs/'.$_SESSION['utilisateur'].'/'.$_GET['site_torrent'].'.ini');
+		echo "Tâche supprimée avec succès.";
 	
 	} catch (Exception $e) {
 		die('Erreur : '.$e->getMessage());

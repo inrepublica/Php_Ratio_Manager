@@ -18,7 +18,6 @@ function connexion_site($utilisateur, $mot_de_passe)
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	}
 	
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_NOBODY, true);
 	
@@ -56,7 +55,6 @@ function deconnexion_site ()
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	}
 	
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_NOBODY, true);
 	curl_setopt($ch, CURLOPT_COOKIESESSION, true);
@@ -91,8 +89,7 @@ function scrape_ratio($utilisateur,$mot_de_passe)
 	{ 
 	  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 	  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); 
-	}
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); 
+	} 
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
 	curl_setopt($ch, CURLOPT_COOKIESESSION, true);
 	curl_setopt($ch, CURLOPT_COOKIEFILE, $cookies_file); 
@@ -106,8 +103,11 @@ function scrape_ratio($utilisateur,$mot_de_passe)
 	// Retourne la valeur du ratio sinon FALSE
 	if ($http_code == 200) 
 	{ 
-		if (preg_match('#<span>Ratio: <strong class=\"rate\">(\d,\d\d)</strong>#', $page_content, $matches)) 
-			return ($matches[1]); 
+		if (preg_match('#<span>Ratio: <strong class=\"rate\">(.+)</strong>#', $page_content, $matches)) {
+			if ($matches[1] == 'Inf.') $matches[1] = 10000;
+			$matches[1] = floatval(str_replace(array(',', ' '), array('.', ''), $matches[1]));
+			return ($matches[1]);
+		}
 		else 
 			return ($erreur = FALSE);
 	}
@@ -141,7 +141,6 @@ function telechargement_torrent($utilisateur_php_ratio,$utilisateur, $mot_de_pas
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	}
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_COOKIESESSION, true);
 	curl_setopt($ch, CURLOPT_COOKIEFILE, $cookies_file);
@@ -172,7 +171,6 @@ function telechargement_torrent($utilisateur_php_ratio,$utilisateur, $mot_de_pas
 			curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 			
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_COOKIESESSION, true);
 			
@@ -197,22 +195,22 @@ function telechargement_torrent($utilisateur_php_ratio,$utilisateur, $mot_de_pas
 				$ini->ecrire();
 				// On éfface le torrent
 				unlink('utilisateurs/'.$utilisateur_php_ratio.'/'.$nom_torrent_top100[1].'.torrent');
-				return ($erreur = TRUE);
+				return ($resultat = TRUE);
 			}
 			else {
-				return ($erreur = FALSE);
+				return ($resultat = FALSE);
 			}
 			
 			}
 		else 
 			{
-			return ($erreur = FALSE);
+			return ($resultat = FALSE);
 			}
 	}
 	
 	else
 		{
-			return ($erreur = FALSE);
+			return ($resultat = FALSE);
 		}
 
 	// Requête de déconnexion
